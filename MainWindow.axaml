@@ -1,0 +1,100 @@
+<Window xmlns="https://github.com/avaloniaui"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        x:Class="MacMascotApp.MainWindow"
+        TransparencyLevelHint="Transparent"
+        Background="Transparent"
+        WindowStartupLocation="CenterScreen"
+        CanResize="False"
+        ExtendClientAreaToDecorationsHint="True"
+        ExtendClientAreaChromeHints="NoChrome"
+        Width="300">
+
+    <Window.Styles>
+        <!-- TextBoxのスタイルをカスタマイズ -->
+        <Style Selector="TextBox">
+            <Setter Property="Background" Value="White"/>
+            <Setter Property="Foreground" Value="Black"/>
+            <Setter Property="CaretBrush" Value="Black"/>
+            <Setter Property="BorderBrush" Value="#A0000000"/>
+            <Setter Property="SelectionBrush" Value="#D0E6F6"/>
+        </Style>
+        
+        <!-- フォーカス時のスタイル -->
+        <Style Selector="TextBox:focus">
+            <Setter Property="Background" Value="White"/>
+            <Setter Property="Foreground" Value="Black"/>
+        </Style>
+        
+        <!-- フォーカス時のTextPresenterスタイル - Foregroundプロパティを削除 -->
+        <Style Selector="TextBox:focus /template/ TextPresenter#PART_TextPresenter">
+            <Setter Property="SelectionBrush" Value="#D0E6F6"/>
+            <Setter Property="CaretBrush" Value="Black"/>
+        </Style>
+        
+        <!-- ポインターオーバー時のスタイル -->
+        <Style Selector="TextBox:pointerover /template/ Border#PART_BorderElement">
+            <Setter Property="Background" Value="White"/>
+        </Style>
+    </Window.Styles>
+
+    <Grid>
+        <Grid.RowDefinitions>
+            <RowDefinition Height="*" />
+            <RowDefinition Height="Auto" />
+        </Grid.RowDefinitions>
+        
+        <!-- キャラクター画像 -->
+        <Image x:Name="CharacterImage"
+               Grid.Row="0"
+               Stretch="Uniform"
+               HorizontalAlignment="Center"
+               VerticalAlignment="Center"/>
+        
+        <!-- 吹き出し表示エリア -->
+        <Border x:Name="SpeechBubble" 
+                Grid.Row="0"
+                Background="#F0FFFFFF"
+                BorderBrush="#A0000000"
+                BorderThickness="1"
+                CornerRadius="10"
+                Padding="10"
+                Margin="10,10,10,0"
+                Width="250"
+                MaxHeight="150"
+                VerticalAlignment="Top"
+                HorizontalAlignment="Center"
+                IsVisible="False">
+            <TextBlock x:Name="ResponseText" 
+                       TextWrapping="Wrap"
+                       FontSize="14"
+                       Foreground="Black" />
+        </Border>
+        
+        <!-- 会話入力エリア -->
+        <Grid Grid.Row="1" Margin="10,0,10,10">
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="*" />
+                <ColumnDefinition Width="Auto" />
+            </Grid.ColumnDefinitions>
+            
+            <TextBox x:Name="InputTextBox" 
+                     Grid.Column="0"
+                     Watermark="メッセージを入力..."
+                     Background="White"
+                     Foreground="Black"
+                     BorderThickness="1"
+                     CornerRadius="10"
+                     Padding="8,4"
+                     Margin="0,0,5,0"/>
+            
+            <Button x:Name="SendButton" 
+                    Grid.Column="1"
+                    Content="送信"
+                    Background="#E0FFFFFF"
+                    Foreground="Black"
+                    BorderBrush="#A0000000"
+                    Padding="8,4"
+                    CornerRadius="10"/>
+        </Grid>
+    </Grid>
+</Window>
