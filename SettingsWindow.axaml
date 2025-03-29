@@ -1,0 +1,183 @@
+<Window xmlns="https://github.com/avaloniaui"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        x:Class="MacMascotApp.SettingsWindow"
+        Title="設定"
+        Width="1080"
+        Height="800"
+        WindowStartupLocation="CenterScreen"
+        CanResize="True"
+        TransparencyLevelHint="AcrylicBlur"
+        ExtendClientAreaToDecorationsHint="True"
+        ExtendClientAreaChromeHints="NoChrome"
+        SystemDecorations="BorderOnly">
+
+  <Window.Styles>
+    <!-- グループボックスのスタイル -->
+    <Style Selector="Border.groupBox">
+      <Setter Property="BorderBrush" Value="{DynamicResource SystemControlHighlightBaseMediumBrush}"/>
+      <Setter Property="BorderThickness" Value="1"/>
+      <Setter Property="CornerRadius" Value="5"/>
+      <Setter Property="Padding" Value="10"/>
+      <Setter Property="Margin" Value="5"/>
+      <Setter Property="Background" Value="{DynamicResource SystemControlBackgroundAltHighBrush}"/>
+    </Style>
+    
+    <!-- 設定項目ラベルのスタイル -->
+    <Style Selector="TextBlock.settingLabel">
+      <Setter Property="VerticalAlignment" Value="Center"/>
+      <Setter Property="HorizontalAlignment" Value="Right"/>
+      <Setter Property="Margin" Value="0,0,10,0"/>
+      <Setter Property="Width" Value="120"/>
+      <Setter Property="Foreground" Value="{DynamicResource SystemControlForegroundBaseHighBrush}"/>
+      <Setter Property="FontFamily" Value="Arial"/>
+    </Style>
+    
+    <!-- 設定項目コンテナのスタイル -->
+    <Style Selector="StackPanel.settingItem">
+      <Setter Property="Orientation" Value="Horizontal"/>
+      <Setter Property="Margin" Value="0,5"/>
+    </Style>
+
+    <!-- ヘッダーテキストのスタイル -->
+    <Style Selector="TextBlock.headerText">
+      <Setter Property="FontWeight" Value="Bold"/>
+      <Setter Property="Margin" Value="0,0,0,10"/>
+      <Setter Property="Foreground" Value="{DynamicResource SystemControlForegroundBaseHighBrush}"/>
+    </Style>
+
+    <!-- ボタンのスタイル -->
+    <Style Selector="Button">
+      <Setter Property="Background" Value="{DynamicResource SystemControlBackgroundBaseLowBrush}"/>
+      <Setter Property="Foreground" Value="{DynamicResource SystemControlForegroundBaseHighBrush}"/>
+      <Setter Property="BorderBrush" Value="{DynamicResource SystemControlHighlightBaseMediumBrush}"/>
+      <Setter Property="BorderThickness" Value="1"/>
+      <Setter Property="Padding" Value="10,5"/>
+      <Setter Property="CornerRadius" Value="4"/>
+      <Setter Property="HorizontalAlignment" Value="Center"/>
+      <Setter Property="VerticalAlignment" Value="Center"/>
+      <Setter Property="FontFamily" Value="Arial"/>
+    </Style>
+    
+    <!-- ボタンホバー時のスタイル -->
+    <Style Selector="Button:pointerover /template/ ContentPresenter">
+      <Setter Property="Background" Value="{DynamicResource SystemControlHighlightListLowBrush}"/>
+    </Style>
+  </Window.Styles>
+
+  <Panel>
+    <!-- 背景 -->
+    <Panel Background="{DynamicResource SystemControlBackgroundAltHighBrush}" Opacity="0.95" />
+    
+    <!-- タイトルバー -->
+    <Grid VerticalAlignment="Top" Height="40" Margin="0,0,0,0">
+      <TextBlock Text="マスコット設定" HorizontalAlignment="Center" VerticalAlignment="Center" 
+                 FontWeight="Bold" FontSize="16" Foreground="{DynamicResource SystemControlForegroundBaseHighBrush}"/>
+      <Button x:Name="CloseWindowButton" Content="×" HorizontalAlignment="Right" VerticalAlignment="Center"
+              Width="40" Height="40" Background="Transparent" BorderThickness="0" Margin="0,0,5,0" />
+    </Grid>
+    
+    <!-- コンテンツエリア -->
+    <Grid Margin="10,40,10,10">
+      <Grid.RowDefinitions>
+        <RowDefinition Height="*"/>
+        <RowDefinition Height="Auto"/>
+      </Grid.RowDefinitions>
+      
+      <!-- 設定項目のメインエリア -->
+      <ScrollViewer Grid.Row="0">
+        <StackPanel>
+          <!-- キャラクター設定グループ -->
+          <Border Classes="groupBox">
+            <StackPanel>
+              <TextBlock Text="キャラクター設定" Classes="headerText"/>
+              
+              <StackPanel Classes="settingItem">
+                <TextBlock Text="キャラクター画像" Classes="settingLabel"/>
+                <ComboBox x:Name="CharacterSelector" Width="250"/>
+              </StackPanel>
+              
+              <StackPanel Classes="settingItem">
+                <TextBlock Text="プレビュー" Classes="settingLabel"/>
+                <Border BorderBrush="{DynamicResource SystemControlHighlightBaseMediumBrush}" BorderThickness="1" Width="150" Height="150">
+                  <Image x:Name="CharacterPreview" Margin="5" Stretch="Uniform"/>
+                </Border>
+              </StackPanel>
+            </StackPanel>
+          </Border>
+          
+          <!-- 吹き出し設定グループ -->
+          <Border Classes="groupBox">
+            <StackPanel>
+              <TextBlock Text="吹き出し設定" Classes="headerText"/>
+              
+              <StackPanel Classes="settingItem">
+                <TextBlock Text="背景色" Classes="settingLabel"/>
+                <ComboBox x:Name="BackgroundColorSelector" Width="120">
+                  <ComboBoxItem Content="白" Tag="#FFFFFF"/>
+                  <ComboBoxItem Content="薄ピンク" Tag="#FFE6E6"/>
+                  <ComboBoxItem Content="薄水色" Tag="#E6F0FF"/>
+                  <ComboBoxItem Content="薄黄色" Tag="#FFFFDD"/>
+                  <ComboBoxItem Content="薄緑色" Tag="#E6FFEE"/>
+                </ComboBox>
+                <ColorPicker x:Name="BackgroundColorPicker" Margin="10,0,0,0" Width="30" Height="30"/>
+              </StackPanel>
+              
+              <StackPanel Classes="settingItem">
+                <TextBlock Text="枠線色" Classes="settingLabel"/>
+                <ComboBox x:Name="BorderColorSelector" Width="120">
+                  <ComboBoxItem Content="黒" Tag="#000000"/>
+                  <ComboBoxItem Content="グレー" Tag="#999999"/>
+                  <ComboBoxItem Content="茶色" Tag="#994C00"/>
+                  <ComboBoxItem Content="青色" Tag="#0066CC"/>
+                  <ComboBoxItem Content="赤色" Tag="#CC0000"/>
+                </ComboBox>
+                <ColorPicker x:Name="BorderColorPicker" Margin="10,0,0,0" Width="30" Height="30"/>
+              </StackPanel>
+              
+              <StackPanel Classes="settingItem">
+                <TextBlock Text="テキスト色" Classes="settingLabel"/>
+                <ComboBox x:Name="TextColorSelector" Width="120">
+                  <ComboBoxItem Content="黒" Tag="#000000"/>
+                  <ComboBoxItem Content="グレー" Tag="#555555"/>
+                  <ComboBoxItem Content="青色" Tag="#0000CC"/>
+                  <ComboBoxItem Content="赤色" Tag="#CC0000"/>
+                  <ComboBoxItem Content="紫色" Tag="#660099"/>
+                </ComboBox>
+                <ColorPicker x:Name="TextColorPicker" Margin="10,0,0,0" Width="30" Height="30"/>
+              </StackPanel>
+            </StackPanel>
+          </Border>
+          
+          <!-- 表示設定グループ -->
+          <Border Classes="groupBox">
+            <StackPanel>
+              <TextBlock Text="表示設定" Classes="headerText"/>
+              
+              <StackPanel Classes="settingItem">
+                <TextBlock Text="起動位置" Classes="settingLabel"/>
+                <ComboBox x:Name="StartupPositionSelector" Width="120">
+                  <ComboBoxItem Content="右下"/>
+                  <ComboBoxItem Content="右上"/>
+                  <ComboBoxItem Content="左下"/>
+                  <ComboBoxItem Content="左上"/>
+                </ComboBox>
+              </StackPanel>
+              
+              <StackPanel Classes="settingItem">
+                <TextBlock Text="画面余白" Classes="settingLabel"/>
+                <Slider x:Name="MarginSlider" Minimum="0" Maximum="100" Width="200"/>
+                <TextBlock x:Name="MarginValue" Width="30" TextAlignment="Center"/>
+              </StackPanel>
+            </StackPanel>
+          </Border>
+        </StackPanel>
+      </ScrollViewer>
+      
+      <!-- ボタンエリア -->
+      <StackPanel Grid.Row="1" Orientation="Horizontal" HorizontalAlignment="Right" Margin="0,10,0,0">
+        <Button x:Name="CancelButton" Content="キャンセル" Width="100" Margin="0,0,10,0" HorizontalContentAlignment="Center" VerticalContentAlignment="Center"/>
+        <Button x:Name="SaveButton" Content="保存" Width="100" HorizontalContentAlignment="Center" VerticalContentAlignment="Center"/>
+      </StackPanel>
+    </Grid>
+  </Panel>
+</Window>
