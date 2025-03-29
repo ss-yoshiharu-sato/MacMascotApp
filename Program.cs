@@ -19,3 +19,6 @@ class Program
             .WithInterFont()
             .LogToTrace();
 }
+
+// NetworkChecker クラスを削除
+// 必要に応じて MainWindow.axaml.cs に統一されています

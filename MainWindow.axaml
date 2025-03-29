@@ -1,13 +1,20 @@
 <Window xmlns="https://github.com/avaloniaui"
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
         x:Class="MacMascotApp.MainWindow"
-        TransparencyLevelHint="Transparent"
+        TransparencyLevelHint="AcrylicBlur,Transparent"
         Background="Transparent"
+        SystemDecorations="None"
         WindowStartupLocation="CenterScreen"
         CanResize="False"
         ExtendClientAreaToDecorationsHint="True"
         ExtendClientAreaChromeHints="NoChrome"
-        Width="300">
+        Width="300"
+        Opacity="1">
+
+    <Window.Resources>
+        <!-- 日本語と英数字のベースラインを揃えるためのフォントファミリー設定 -->
+        <FontFamily x:Key="MixedTextFontFamily">Hiragino Sans, Hiragino Kaku Gothic ProN, Yu Gothic, Meiryo, Helvetica Neue, Arial, sans-serif</FontFamily>
+    </Window.Resources>
 
     <Window.Styles>
         <!-- TextBoxのスタイルをカスタマイズ -->
@@ -19,82 +26,76 @@
             <Setter Property="SelectionBrush" Value="#D0E6F6"/>
         </Style>
         
-        <!-- フォーカス時のスタイル -->
-        <Style Selector="TextBox:focus">
-            <Setter Property="Background" Value="White"/>
-            <Setter Property="Foreground" Value="Black"/>
-        </Style>
-        
-        <!-- フォーカス時のTextPresenterスタイル - Foregroundプロパティを削除 -->
-        <Style Selector="TextBox:focus /template/ TextPresenter#PART_TextPresenter">
-            <Setter Property="SelectionBrush" Value="#D0E6F6"/>
-            <Setter Property="CaretBrush" Value="Black"/>
-        </Style>
-        
-        <!-- ポインターオーバー時のスタイル -->
-        <Style Selector="TextBox:pointerover /template/ Border#PART_BorderElement">
-            <Setter Property="Background" Value="White"/>
+        <!-- 日本語と英数字が混在するテキストのスタイル -->
+        <Style Selector="TextBlock.mixedText">
+            <Setter Property="FontFamily" Value="{StaticResource MixedTextFontFamily}"/>
+            <Setter Property="TextAlignment" Value="Left"/>
+            <!-- 行間を1.5に設定 -->
+            <Setter Property="LineHeight" Value="1.5"/>
+            <Setter Property="FontFeatures" Value="palt"/>
+            <Setter Property="TextTrimming" Value="None"/>
+            <Setter Property="FontWeight" Value="Normal"/>
         </Style>
     </Window.Styles>
 
-    <Grid>
+    <Grid Background="Transparent">
         <Grid.RowDefinitions>
             <RowDefinition Height="*" />
-            <RowDefinition Height="Auto" />
         </Grid.RowDefinitions>
-        
+
         <!-- キャラクター画像 -->
         <Image x:Name="CharacterImage"
-               Grid.Row="0"
                Stretch="Uniform"
                HorizontalAlignment="Center"
-               VerticalAlignment="Center"/>
-        
-        <!-- 吹き出し表示エリア -->
-        <Border x:Name="SpeechBubble" 
-                Grid.Row="0"
-                Background="#F0FFFFFF"
-                BorderBrush="#A0000000"
-                BorderThickness="1"
-                CornerRadius="10"
-                Padding="10"
-                Margin="10,10,10,0"
-                Width="250"
-                MaxHeight="150"
-                VerticalAlignment="Top"
-                HorizontalAlignment="Center"
-                IsVisible="False">
-            <TextBlock x:Name="ResponseText" 
-                       TextWrapping="Wrap"
-                       FontSize="14"
-                       Foreground="Black" />
-        </Border>
-        
-        <!-- 会話入力エリア -->
-        <Grid Grid.Row="1" Margin="10,0,10,10">
-            <Grid.ColumnDefinitions>
-                <ColumnDefinition Width="*" />
-                <ColumnDefinition Width="Auto" />
-            </Grid.ColumnDefinitions>
-            
-            <TextBox x:Name="InputTextBox" 
-                     Grid.Column="0"
-                     Watermark="メッセージを入力..."
-                     Background="White"
-                     Foreground="Black"
-                     BorderThickness="1"
-                     CornerRadius="10"
-                     Padding="8,4"
-                     Margin="0,0,5,0"/>
-            
-            <Button x:Name="SendButton" 
-                    Grid.Column="1"
-                    Content="送信"
-                    Background="#E0FFFFFF"
-                    Foreground="Black"
-                    BorderBrush="#A0000000"
-                    Padding="8,4"
-                    CornerRadius="10"/>
+               VerticalAlignment="Bottom"
+               Margin="10" />
+
+        <!-- 吹き出しのレイヤー -->
+        <Grid VerticalAlignment="Center" Background="Transparent">
+            <Grid.RowDefinitions>
+                <RowDefinition Height="Auto" />
+            </Grid.RowDefinitions>
+
+            <!-- 吹き出し表示エリア -->
+            <Border x:Name="SpeechBubble" 
+                    Grid.Row="0"
+                    Background="#FFFFFF"
+                    BorderBrush="#000000"
+                    BorderThickness="1"
+                    CornerRadius="10"
+                    Padding="15,15,15,15"
+                    Margin="10"
+                    Width="250"
+                    MinHeight="60"
+                    MaxHeight="100"
+                    VerticalAlignment="Center"
+                    HorizontalAlignment="Center"
+                    IsVisible="False"
+                    ClipToBounds="True">
+                <Grid>
+                    <TextBlock x:Name="ResponseText" 
+                               Classes="mixedText"
+                               TextWrapping="Wrap"
+                               FontSize="14"
+                               Margin="0,0,0,20"
+                               VerticalAlignment="Top"
+                               Foreground="Black"
+                               ClipToBounds="False" />
+                    <TextBlock x:Name="CloseText"
+                            Text="×"
+                            FontSize="12"
+                            Width="20"
+                            Height="20"
+                            HorizontalAlignment="Right"
+                            VerticalAlignment="Bottom"
+                            TextAlignment="Center"
+                            Margin="0,0,0,0"
+                            Foreground="#666666"
+                            ZIndex="100"
+                            Cursor="Hand"
+                            PointerPressed="CloseButton_Click"/>
+                </Grid>
+            </Border>
         </Grid>
     </Grid>
 </Window>

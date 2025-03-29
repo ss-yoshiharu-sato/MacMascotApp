@@ -24,9 +24,17 @@ public partial class App : Application
 
     public override void OnFrameworkInitializationCompleted()
     {
+        // macOSでの透明ウィンドウ処理のためのグローバル設定
         if (ApplicationLifetime is IClassicDesktopStyleApplicationLifetime desktop)
         {
-            desktop.MainWindow = new MainWindow();
+            // メインウィンドウの作成と設定
+            var mainWindow = new MainWindow();
+            desktop.MainWindow = mainWindow;
+            
+            // アプリケーション終了時にリソースをクリーンアップ
+            desktop.Exit += (s, e) => {
+                Console.WriteLine("アプリケーション終了");
+            };
         }
 
         base.OnFrameworkInitializationCompleted();

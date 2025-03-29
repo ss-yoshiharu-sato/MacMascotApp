@@ -6,5 +6,13 @@
 
     <Application.Styles>
         <FluentTheme />
+        <!-- 透過処理のカスタムスタイル -->
+        <Style Selector="Window">
+            <Setter Property="Background" Value="Transparent" />
+            <Setter Property="TransparencyLevelHint" Value="Transparent,AcrylicBlur" />
+        </Style>
+        <Style Selector="Grid">
+            <Setter Property="Background" Value="Transparent" />
+        </Style>
     </Application.Styles>
 </Application>
