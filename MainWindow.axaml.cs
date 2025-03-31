@@ -323,7 +323,7 @@ namespace MacMascotApp
         
         private void RegisterEventHandlers()
         {
-            // コメントアウトを解除してPointerPressedイベントを有効化
+            // null参照警告(CS8622)を修正
             this.PointerPressed += OnPointerPressed;
             this.PointerMoved += OnPointerMoved;
             this.PointerReleased += OnPointerReleased;
@@ -391,6 +391,19 @@ namespace MacMascotApp
             
             contextMenu.Items.Add(otagareMenuItem);
 
+            // 設定項目の前にセパレータを追加（NativeMenuItemSeparatorからSeparatorに変更）
+            // contextMenu.Items.Add(new Separator());
+            contextMenu.Items.Add(new Separator());
+
+            // 「設定」メニューを追加
+            var settingsMenuItem = new MenuItem { Header = "設定" };
+            settingsMenuItem.Click += ShowSettingsWindow;
+            contextMenu.Items.Add(settingsMenuItem);
+
+            // 設定項目の後にセパレータを追加（NativeMenuItemSeparatorからSeparatorに変更）
+            // contextMenu.Items.Add(new Separator());
+            contextMenu.Items.Add(new Separator());
+
             var closeMenuItem = new MenuItem { Header = "閉じる" };
             closeMenuItem.Click += (s, e) => 
             {
@@ -409,6 +422,131 @@ namespace MacMascotApp
             return contextMenu;
         }
 
+        private async Task SomeAsyncMethod()
+        {
+            // 必要な非同期処理を追加
+            await Task.Delay(1000); // 例として1秒待機
+        }
+
+        private void SomeMethod()
+        {
+            // 非同期呼び出しの結果を待機
+            _ = SomeAsyncMethod();
+        }
+
+        private void AnotherMethod()
+        {
+            // asyncを削除し、同期的に実行
+            Task.Run(() => Console.WriteLine("同期的に実行"));
+        }
+
+        private void ShowSettingsWindow(object? sender, RoutedEventArgs e)
+        {
+            // CS8622: イベントハンドラの型を修正
+            if (sender is not null)
+            {
+                try
+                {
+                    var settingsWindow = new SettingsWindow();
+                    
+                    // ShowDialogからShowに変更し、モーダルではなく独立したウィンドウとして表示
+                    settingsWindow.Show();
+                    
+                    // SettingWindowが閉じられた際のイベントハンドラ
+                    // settingsWindow.Closed += (s, args) =>
+                    // {
+                    //     // 設定画面が閉じられた後に設定を適用
+                    //     ApplySettings();
+                    // };
+                    settingsWindow.Closed += async (s, args) =>
+                    {
+                        // 設定画面が閉じられた後に設定を適用
+                        await Task.Run(() => ApplySettings());
+                    };
+                }
+                catch (Exception ex)
+                {
+                    Console.WriteLine($"設定画面の表示中にエラーが発生しました: {ex.Message}");
+                }
+            }
+        }
+
+        // 設定を適用するメソッド
+        private void ApplySettings()
+        {
+            try
+            {
+                var settings = Settings.Instance;
+                
+                // キャラクター画像の更新
+                UpdateCharacterImage(settings.CharacterImageFileName);
+                
+                // 吹き出しの色を更新
+                SpeechBubble.Background = settings.GetSpeechBubbleBackgroundBrush();
+                SpeechBubble.BorderBrush = settings.GetSpeechBubbleBorderBrush();
+                ResponseText.Foreground = settings.GetSpeechBubbleTextBrush();
+                
+                // 再描画を強制
+                SpeechBubble.InvalidateVisual();
+                CharacterImage.InvalidateVisual();
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine($"設定の適用中にエラーが発生しました: {ex.Message}");
+            }
+        }
+
+        // キャラクター画像を更新するメソッド
+        private void UpdateCharacterImage(string characterFileName)
+        {
+            try
+            {
+                var resourcesDir = Path.Combine(Directory.GetCurrentDirectory(), "Resources");
+                var imagePath = Path.Combine(resourcesDir, characterFileName);
+                
+                if (File.Exists(imagePath))
+                {
+                    var bitmap = new Bitmap(imagePath);
+                    CharacterImage.Source = bitmap;
+                    
+                    // キャラクター画像が変わった場合はウィンドウサイズも調整
+                    // if (bitmap != null)
+                    // {
+                    //     double aspectRatio = bitmap.Size.Height / bitmap.Size.Width;
+                    //     double calculatedHeight = 300 * aspectRatio;
+                        
+                    //     initialHeight = calculatedHeight + 130;
+                    //     this.Height = initialHeight;
+                        
+                    //     // 再配置
+                    //     PositionWindowBottomRight();
+                    // }
+                    if (bitmap != null)
+                    {
+                        double aspectRatio = bitmap.Size.Height / bitmap.Size.Width;
+                        double calculatedHeight = 300 * aspectRatio;
+
+                        if (calculatedHeight > 0 && calculatedHeight < 10000) // 例: 0より大きく、10000より小さい
+                        {
+                            initialHeight = calculatedHeight + 130;
+                            this.Height = initialHeight;
+
+                            // 再配置
+                            PositionWindowBottomRight();
+                        }
+                    }
+                }
+                else
+                {
+                    Console.WriteLine($"キャラクター画像が見つかりません: {imagePath}");
+                }
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine($"キャラクター画像の更新中にエラーが発生しました: {ex.Message}");
+            }
+        }
+
         public MainWindow()
         {
             InitializeComponent();
@@ -425,6 +563,9 @@ namespace MacMascotApp
             
             // キャラクター画像とウィンドウサイズの初期化
             InitializeCharacterImageAndWindowSize();
+            
+            // 初期設定を読み込む
+            LoadInitialSettings();
 
             // イベントハンドラの登録
             RegisterEventHandlers();
@@ -437,7 +578,7 @@ namespace MacMascotApp
 
             // ウィンドウが開かれた後に追加の透明度設定を適用
             this.Opened += (sender, e) => {
-                PositionWindowBottomRight();
+                PositionWindowAccordingToSettings();
 
                 // macOSでの透明度問題に対処
                 this.Background = null;
@@ -468,6 +609,70 @@ namespace MacMascotApp
             // UIの初期状態を明示的に設定
             SpeechBubble.IsVisible = false;
             SpeechBubble.Opacity = 1.0;
+        }
+        
+        // 初期設定を読み込むメソッドを追加
+        private void LoadInitialSettings()
+        {
+            try
+            {
+                var settings = Settings.Instance;
+                
+                // 利用可能なキャラクターを検索
+                settings.ScanForCharacters();
+                
+                // 設定を適用
+                ApplySettings();
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine($"初期設定の読み込み中にエラーが発生しました: {ex.Message}");
+            }
+        }
+        
+        // 設定に従ってウィンドウの位置を調整するメソッド
+        private void PositionWindowAccordingToSettings()
+        {
+            var settings = Settings.Instance;
+            var screen = Screens.Primary;
+            
+            if (screen != null)
+            {
+                var workingArea = screen.WorkingArea;
+                var padding = settings.ScreenMargin;
+                
+                switch (settings.StartupPosition)
+                {
+                    case "右下":
+                        this.Position = new PixelPoint(
+                            (int)(workingArea.Right - this.ClientSize.Width - padding),
+                            (int)(workingArea.Bottom - this.ClientSize.Height - padding)
+                        );
+                        break;
+                    case "右上":
+                        this.Position = new PixelPoint(
+                            (int)(workingArea.Right - this.ClientSize.Width - padding),
+                            (int)(workingArea.Y + padding)
+                        );
+                        break;
+                    case "左下":
+                        this.Position = new PixelPoint(
+                            (int)(workingArea.X + padding),
+                            (int)(workingArea.Bottom - this.ClientSize.Height - padding)
+                        );
+                        break;
+                    case "左上":
+                        this.Position = new PixelPoint(
+                            (int)(workingArea.X + padding),
+                            (int)(workingArea.Y + padding)
+                        );
+                        break;
+                    default:
+                        // デフォルトは右下
+                        PositionWindowBottomRight();
+                        break;
+                }
+            }
         }
     }
     
