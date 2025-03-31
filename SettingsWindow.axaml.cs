@@ -271,15 +271,15 @@ namespace MacMascotApp
         private void UpdateColorFromPicker(ColorPicker? picker, ComboBox? comboBox)
         {
             if (picker == null || comboBox == null) return;
-            
+
             // ColorPickerで選択された色をHex文字列に変換
             string colorHex = ColorToHexString(picker.Color);
-            
+
             // 対応するComboBoxでプリセットがあるか探す
             bool foundMatch = false;
             foreach (var item in comboBox.Items)
             {
-                if (item is ComboBoxItem comboItem && 
+                if (item is ComboBoxItem comboItem &&
                     comboItem.Tag?.ToString()?.ToUpperInvariant() == colorHex.ToUpperInvariant())
                 {
                     comboBox.SelectedItem = comboItem;
@@ -287,11 +287,11 @@ namespace MacMascotApp
                     break;
                 }
             }
-            
+
             // プリセットにない場合、カスタム色として扱う
             if (!foundMatch)
             {
-                // "カスタム"項目がなければ追加
+                // \"カスタム\"項目がなければ追加
                 ComboBoxItem? customItem = null;
                 foreach (var item in comboBox.Items)
                 {
@@ -301,13 +301,13 @@ namespace MacMascotApp
                         break;
                     }
                 }
-                
+
                 if (customItem == null)
                 {
                     customItem = new ComboBoxItem { Content = "カスタム" };
                     comboBox.Items.Add(customItem);
                 }
-                
+
                 customItem.Tag = colorHex;
                 comboBox.SelectedItem = customItem;
             }
@@ -416,12 +416,12 @@ namespace MacMascotApp
                 {
                     return Colors.White;
                 }
-                
+
                 if (hex.StartsWith("#"))
                 {
                     hex = hex.Substring(1);
                 }
-                
+
                 if (hex.Length == 6)
                 {
                     byte r = Convert.ToByte(hex.Substring(0, 2), 16);
@@ -441,8 +441,10 @@ namespace MacMascotApp
             catch (Exception ex)
             {
                 Console.WriteLine($"色の変換中にエラーが発生しました: {ex.Message}");
+                // ユーザーにエラーを通知するロジックを追加
+                return Colors.White;
             }
-            
+
             return Colors.White;
         }
 

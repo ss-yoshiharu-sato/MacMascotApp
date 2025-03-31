@@ -79,10 +79,27 @@ namespace MacMascotApp
             try
             {
                 // 設定ディレクトリが存在しない場合は作成
+                // string dirPath = Path.GetDirectoryName(SettingsFilePath) ?? string.Empty;
+                // if (!string.IsNullOrEmpty(dirPath))
+                // {
+                //     Directory.CreateDirectory(dirPath);
+                // }
                 string dirPath = Path.GetDirectoryName(SettingsFilePath) ?? string.Empty;
                 if (!string.IsNullOrEmpty(dirPath))
                 {
-                    Directory.CreateDirectory(dirPath);
+                    if (!Directory.Exists(dirPath))
+                    {
+                        try
+                        {
+                            Directory.CreateDirectory(dirPath);
+                        }
+                        catch (Exception ex)
+                        {
+                            Console.WriteLine($"設定ディレクトリの作成に失敗しました: {ex.Message}");
+                            // 必要に応じてユーザーにエラーメッセージを表示
+                            return;
+                        }
+                    }
                 }
 
                 // 設定をJSONに変換して保存

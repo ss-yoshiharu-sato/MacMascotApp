@@ -392,6 +392,7 @@ namespace MacMascotApp
             contextMenu.Items.Add(otagareMenuItem);
 
             // 設定項目の前にセパレータを追加（NativeMenuItemSeparatorからSeparatorに変更）
+            // contextMenu.Items.Add(new Separator());
             contextMenu.Items.Add(new Separator());
 
             // 「設定」メニューを追加
@@ -400,6 +401,7 @@ namespace MacMascotApp
             contextMenu.Items.Add(settingsMenuItem);
 
             // 設定項目の後にセパレータを追加（NativeMenuItemSeparatorからSeparatorに変更）
+            // contextMenu.Items.Add(new Separator());
             contextMenu.Items.Add(new Separator());
 
             var closeMenuItem = new MenuItem { Header = "閉じる" };
@@ -451,10 +453,15 @@ namespace MacMascotApp
                     settingsWindow.Show();
                     
                     // SettingWindowが閉じられた際のイベントハンドラ
-                    settingsWindow.Closed += (s, args) =>
+                    // settingsWindow.Closed += (s, args) =>
+                    // {
+                    //     // 設定画面が閉じられた後に設定を適用
+                    //     ApplySettings();
+                    // };
+                    settingsWindow.Closed += async (s, args) =>
                     {
                         // 設定画面が閉じられた後に設定を適用
-                        ApplySettings();
+                        await Task.Run(() => ApplySettings());
                     };
                 }
                 catch (Exception ex)
@@ -503,16 +510,30 @@ namespace MacMascotApp
                     CharacterImage.Source = bitmap;
                     
                     // キャラクター画像が変わった場合はウィンドウサイズも調整
+                    // if (bitmap != null)
+                    // {
+                    //     double aspectRatio = bitmap.Size.Height / bitmap.Size.Width;
+                    //     double calculatedHeight = 300 * aspectRatio;
+                        
+                    //     initialHeight = calculatedHeight + 130;
+                    //     this.Height = initialHeight;
+                        
+                    //     // 再配置
+                    //     PositionWindowBottomRight();
+                    // }
                     if (bitmap != null)
                     {
                         double aspectRatio = bitmap.Size.Height / bitmap.Size.Width;
                         double calculatedHeight = 300 * aspectRatio;
-                        
-                        initialHeight = calculatedHeight + 130;
-                        this.Height = initialHeight;
-                        
-                        // 再配置
-                        PositionWindowBottomRight();
+
+                        if (calculatedHeight > 0 && calculatedHeight < 10000) // 例: 0より大きく、10000より小さい
+                        {
+                            initialHeight = calculatedHeight + 130;
+                            this.Height = initialHeight;
+
+                            // 再配置
+                            PositionWindowBottomRight();
+                        }
                     }
                 }
                 else
